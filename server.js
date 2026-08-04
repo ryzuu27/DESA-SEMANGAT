@@ -81,3 +81,6 @@ async function main() {
 }
 
 main();
+
+// Di bagian paling bawah server.js:
+module.exports = app;
