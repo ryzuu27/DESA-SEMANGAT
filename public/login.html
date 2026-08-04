@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masuk — SIPADES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F1E4; --card:#FCF9F1; --ink:#22301E; --ink-soft:#4C5A45;
+    --forest:#2F5233; --forest-dark:#1D3A20; --forest-tint:#E4EBDF;
+    --ochre:#B8860B; --clay:#A8451F; --clay-tint:#F3DCCB; --line:#D9CEB0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--paper); font-family:'Public Sans',sans-serif; color:var(--ink);
+    background-image:radial-gradient(circle at 1px 1px, rgba(34,48,30,0.045) 1px, transparent 0);
+    background-size:22px 22px;
+  }
+  .box{width:100%; max-width:380px; padding:20px;}
+  .seal{width:52px;height:52px;border-radius:50%;border:1.5px dashed var(--forest); display:flex;align-items:center;justify-content:center; font-family:'Fraunces',serif; font-weight:600; color:var(--forest-dark); margin:0 auto 16px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:30px 28px; box-shadow:0 10px 30px -10px rgba(34,48,30,0.25);}
+  h1{font-family:'Fraunces',serif; font-size:22px; text-align:center; margin:0 0 4px; font-weight:600;}
+  .sub{text-align:center; font-size:12.5px; color:var(--ink-soft); margin-bottom:24px;}
+  label{font-size:12px; font-weight:600; color:var(--ink-soft); display:block; margin-bottom:5px;}
+  .field{margin-bottom:16px;}
+  input{width:100%; font-family:inherit; font-size:14px; padding:10px 12px; border-radius:7px; border:1px solid var(--line); outline:none;}
+  input:focus{border-color:var(--forest); box-shadow:0 0 0 3px var(--forest-tint);}
+  button{width:100%; padding:11px; border-radius:7px; border:1px solid var(--forest-dark); background:var(--forest); color:#F6F1E4; font-weight:600; font-size:14px; cursor:pointer; margin-top:6px;}
+  button:hover{background:var(--forest-dark);}
+  button:disabled{opacity:.6; cursor:default;}
+  .err{background:var(--clay-tint); color:var(--clay); font-size:12.5px; padding:9px 12px; border-radius:7px; margin-bottom:14px; display:none;}
+  .foot{text-align:center; font-size:11px; color:var(--ink-soft); margin-top:18px;}
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="seal">DS</div>
+    <div class="card">
+      <h1>SIPADES</h1>
+      <div class="sub">Sistem Administrasi &amp; Arsip Desa</div>
+      <div class="err" id="err"></div>
+      <form id="formLogin">
+        <div class="field"><label>Username</label><input type="text" id="username" autocomplete="username" required></div>
+        <div class="field"><label>Password</label><input type="password" id="password" autocomplete="current-password" required></div>
+        <button type="submit" id="btnLogin">Masuk</button>
+      </form>
+    </div>
+    <div class="foot">Akses ke sistem ini dibatasi untuk perangkat desa yang berwenang.</div>
+  </div>
+
+<script>
+  const form = document.getElementById('formLogin');
+  const errBox = document.getElementById('err');
+  const btn = document.getElementById('btnLogin');
+
+  // If already logged in, go straight to the app.
+  fetch('/api/auth/session').then(r=>{ if(r.ok) window.location.href = '/index.html'; });
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    errBox.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Memeriksa...';
+    try{
+      const res = await fetch('/api/auth/login', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          username: document.getElementById('username').value.trim(),
+          password: document.getElementById('password').value,
+        })
+      });
+      const data = await res.json();
+      if(!res.ok){ throw new Error(data.error || 'Gagal masuk.'); }
+      window.location.href = '/index.html';
+    }catch(err){
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Masuk';
+    }
+  });
+</script>
+</body>
+</html>
