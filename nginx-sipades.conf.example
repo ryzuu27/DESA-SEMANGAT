@@ -1,0 +1,37 @@
+# Contoh konfigurasi Nginx sebagai reverse proxy untuk SIPADES.
+#
+# Cara pakai di VPS (Ubuntu/Debian):
+#   1. sudo apt install nginx
+#   2. Salin isi file ini, ganti "domain-anda.go.id" dengan domain/subdomain Anda
+#      (atau alamat IP VPS jika belum punya domain).
+#   3. Simpan sebagai: /etc/nginx/sites-available/sipades
+#   4. sudo ln -s /etc/nginx/sites-available/sipades /etc/nginx/sites-enabled/
+#   5. sudo nginx -t         (cek konfigurasi valid)
+#   6. sudo systemctl reload nginx
+#
+# Setelah ini aktif, langkah HTTPS gratis via Let's Encrypt:
+#   sudo apt install certbot python3-certbot-nginx
+#   sudo certbot --nginx -d domain-anda.go.id
+# Certbot akan otomatis menambahkan blok HTTPS dan redirect ke konfigurasi ini.
+# Setelah HTTPS aktif, JANGAN LUPA ubah COOKIE_SECURE=true di file .env, lalu:
+#   pm2 restart sipades
+
+server {
+    listen 80;
+    server_name domain-anda.go.id;
+
+    # Batas ukuran unggahan berkas — samakan dengan batas di routes/upload.js (15MB)
+    client_max_body_size 16M;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}

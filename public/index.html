@@ -66,7 +66,21 @@
   }
   .brand .name{font-family:'Fraunces',serif; font-weight:600; font-size:16.5px; line-height:1.25;}
   .brand .sub{font-size:11px; letter-spacing:0.06em; text-transform:uppercase; opacity:0.68; margin-top:4px;}
+  .seal {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  }
 
+  .seal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
   nav.tabs{padding:14px 12px; flex:1; overflow-y:auto;}
   nav.tabs .tab{
     display:flex; align-items:center; gap:10px;
@@ -91,6 +105,7 @@
     padding:16px 28px; border-bottom:1px solid var(--line);
     background:var(--paper); position:sticky; top:0; z-index:5;
   }
+  
   #topbar .clock{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft);}
   #topbar .page-title{font-family:'Fraunces',serif; font-size:22px; font-weight:600;}
   #content{padding:24px 28px 60px; flex:1;}
@@ -199,6 +214,44 @@
     background:#fff; border:1px solid var(--line); box-shadow:var(--shadow);
     padding:52px 56px; max-width:760px; margin:0 auto; color:#1a1a1a; font-family:'Public Sans', sans-serif;
   }
+  .kop {
+  position: relative;
+  text-align: center;
+  padding-left: 0; /* pastikan tidak ada offset lain */
+  }
+
+  .seal-lg {
+    position: absolute;
+    left: 20px;      /* jarak dari kiri, sesuaikan */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 90px;
+    height: 90px;
+  }
+
+  .seal-lg img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .kop-text {
+    width: 100%;
+  }
+
+  .seal-lg {
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0; /* supaya tidak mengecil saat teks kop panjang */
+  }
+
+  .seal-lg img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* logo tidak gepeng/terpotong */
+    display: block;
+  }
   .kop{display:flex; align-items:center; gap:16px; border-bottom:3px double #1a1a1a; padding-bottom:14px; margin-bottom:22px;}
   .kop .seal-lg{width:64px;height:64px;border-radius:50%;border:2px solid var(--forest-dark); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:10px; text-align:center; line-height:1.15; color:var(--forest-dark); flex-shrink:0;}
   .kop .kop-text{text-align:center; flex:1;}
@@ -210,6 +263,13 @@
   .letter-title .t2{font-family:'IBM Plex Mono',monospace; font-size:12px; margin-top:3px;}
   .letter-body{font-size:13.5px; line-height:1.9;}
   .letter-body p{margin:0 0 12px;}
+  .ident-grid{
+    display:grid; grid-template-columns:140px 12px 1fr;
+    row-gap:3px; column-gap:0; margin:14px 0; font-size:13.5px;
+  }
+  .ident-grid .ig-label{white-space:nowrap;}
+  .ident-grid .ig-colon{text-align:left;}
+  .ident-grid .ig-value{font-weight:600;}
   .sig-block{display:flex; justify-content:flex-end; margin-top:34px;}
   .sig-inner{text-align:center; font-size:13px; width:230px;}
   .sig-inner .sp{height:64px;}
@@ -221,6 +281,13 @@
   .tab-pane{display:none;}
   .tab-pane.active{display:block;}
 
+  .letter-body p {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  line-height: 1.6; /* jarak antar baris biar lebih nyaman dibaca, mirip dokumen resmi */
+  }
+
   @media (max-width: 880px){
     #sidebar{width:70px;}
     .brand .name, .brand .sub{display:none;}
@@ -230,12 +297,54 @@
     .form-grid{grid-template-columns:1fr;}
   }
 
-  @media print{
-    #sidebar, #topbar, .no-print{display:none !important;}
-    #content{padding:0;}
-    body{background:#fff;}
-    .letter-page{box-shadow:none; border:none; padding:0; max-width:100%;}
+  /* Ukuran A4 untuk preview di layar */
+.letter-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm 25mm; /* margin standar surat resmi: atas-bawah 20mm, kiri-kanan 25mm */
+  margin: 0 auto;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* Pengaturan saat dicetak / print ke PDF */
+@media print {
+  body * {
+    visibility: hidden;
   }
+
+  .letter-page,
+  .letter-page * {
+    visibility: visible;
+  }
+
+  .letter-page {
+    position: fixed;   /* ganti dari absolute ke fixed */
+    left: 0;
+    top: 0;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0;
+    padding: 20mm 25mm;
+    box-shadow: none;
+    border: none;
+  }
+
+  #modalPreview,
+  #previewBody {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    width: auto !important;
+    background: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
 </style>
 </head>
 <body>
@@ -243,7 +352,9 @@
 <div id="app">
   <aside id="sidebar">
     <div class="brand">
-      <div class="seal">DS</div>
+      <div class="seal">
+        <img src="/Bky.png" alt="Logo Desa">
+      </div>
       <div class="name" id="brandNama">Desa Sukamaju Makmur</div>
       <div class="sub">SIPADES — Arsip &amp; Administrasi</div>
     </div>
@@ -367,8 +478,8 @@
         <div class="card card-pad" style="max-width:640px;">
           <form id="formSettings" class="form-grid">
             <div class="form-field full"><label>Nama Desa</label><input type="text" id="setNamaDesa" required></div>
-            <div class="form-field"><label>Kecamatan</label><input type="text" id="setKecamatan" required></div>
-            <div class="form-field"><label>Kabupaten/Kota</label><input type="text" id="setKabupaten" required></div>
+            <div class="form-field"><label>Kecamatan <span style="font-weight:400; color:var(--ink-soft);">(nama saja, tanpa kata "Kecamatan")</span></label><input type="text" id="setKecamatan" placeholder="Ledo" required></div>
+            <div class="form-field"><label>Kabupaten/Kota <span style="font-weight:400; color:var(--ink-soft);">(nama saja, tanpa kata "Kabupaten")</span></label><input type="text" id="setKabupaten" placeholder="Bengkayang" required></div>
             <div class="form-field full"><label>Provinsi</label><input type="text" id="setProvinsi" required></div>
             <div class="form-field full"><label>Alamat Kantor Desa</label><input type="text" id="setAlamat"></div>
             <div class="form-field"><label>Nama Kepala Desa</label><input type="text" id="setNamaKades"></div>
@@ -482,6 +593,7 @@
           <option value="tidak_mampu">Surat Keterangan Tidak Mampu</option>
           <option value="kelahiran">Surat Keterangan Kelahiran</option>
           <option value="kematian">Surat Keterangan Kematian</option>
+          <option value="kartu_keluarga">Surat Keterangan Kartu Keluarga</option>
           <option value="lainnya">Surat Keterangan Lainnya (bebas)</option>
         </select>
       </div>
@@ -949,42 +1061,67 @@
       <p>Demikian surat keterangan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>`;
     }
     const templates = {
-      pengantar_ktp: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa warga dengan data berikut:</p>
+
+    pengantar_ktp: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa warga dengan data berikut:</p>
       ${identBlock(d)}
-      <p>Adalah benar warga Desa ${escapeHtml(kop.namaDesa)} yang bermaksud mengurus <strong>${escapeHtml(d.keperluan||'pembuatan/perpanjangan KTP')}</strong> di Dinas Kependudukan dan Pencatatan Sipil setempat.</p>
-      <p>Demikian surat pengantar ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>`,
-      domisili: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa:</p>
+      <p>Adalah benar warga Desa ${escapeHtml(kop.namaDesa)} yang berdomisili di wilayah desa tersebut. Yang bersangkutan bermaksud mengurus keperluan administrasi kependudukan berupa <strong>${escapeHtml(d.keperluan||'pembuatan/perpanjangan Kartu Tanda Penduduk (KTP)')}</strong> pada Dinas Kependudukan dan Pencatatan Sipil setempat.</p>
+      <p>Surat pengantar ini diberikan sebagai salah satu kelengkapan administrasi dalam proses pengurusan dokumen kependudukan dimaksud. Berdasarkan data dan keterangan yang ada, identitas yang bersangkutan benar merupakan warga Desa ${escapeHtml(kop.namaDesa)}.</p>
+      <p>Demikian surat pengantar ini dibuat dengan sebenar-benarnya agar dapat dipergunakan sebagaimana mestinya dan untuk memenuhi keperluan administrasi yang bersangkutan.</p>`,
+
+    kartu_keluarga: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa warga dengan data berikut:</p>
       ${identBlock(d)}
-      <p>Benar-benar berdomisili di alamat tersebut di atas dan merupakan warga Desa ${escapeHtml(kop.namaDesa)}. Surat keterangan ini dibuat untuk keperluan: <strong>${escapeHtml(d.keperluan||'-')}</strong>.</p>
-      <p>Demikian surat keterangan domisili ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>`,
-      usaha: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa:</p>
+      <p>Adalah benar warga Desa ${escapeHtml(kop.namaDesa)} yang berdomisili di wilayah desa tersebut dan bermaksud mengurus administrasi kependudukan berupa <strong>${escapeHtml(d.keperluan||'pembuatan/perubahan Kartu Keluarga (KK)')}</strong> pada Dinas Kependudukan dan Pencatatan Sipil setempat.</p>
+      <p>Pengurusan Kartu Keluarga tersebut dilakukan untuk keperluan administrasi kependudukan, baik dalam rangka pembuatan Kartu Keluarga baru, perubahan data anggota keluarga, penambahan anggota keluarga, pengurangan anggota keluarga, maupun keperluan administrasi lainnya sesuai dengan keadaan dan kebutuhan yang bersangkutan.</p>
+      <p>Berdasarkan data dan keterangan yang ada, yang bersangkutan benar merupakan warga Desa ${escapeHtml(kop.namaDesa)}. Surat pengantar ini diberikan sebagai salah satu kelengkapan persyaratan administrasi dalam proses pengurusan dokumen Kartu Keluarga pada instansi yang berwenang.</p>
+      <p>Demikian surat pengantar ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya dan dipergunakan untuk keperluan administrasi kependudukan yang bersangkutan.</p>`,
+
+    domisili: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa:</p>
       ${identBlock(d)}
-      <p>Benar yang bersangkutan memiliki dan menjalankan usaha dengan keterangan sebagai berikut: <strong>${escapeHtml(d.keperluan||'-')}</strong>, dan usaha tersebut berlokasi di wilayah Desa ${escapeHtml(kop.namaDesa)}.</p>
-      <p>Demikian surat keterangan usaha ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>`,
-      tidak_mampu: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa:</p>
+      <p>Benar-benar berdomisili di alamat tersebut di atas dan merupakan warga Desa ${escapeHtml(kop.namaDesa)}. Yang bersangkutan telah diketahui dan tercatat sebagai warga yang berdomisili di wilayah Desa ${escapeHtml(kop.namaDesa)}.</p>
+      <p>Surat keterangan domisili ini diterbitkan berdasarkan keterangan yang diberikan oleh yang bersangkutan serta data administrasi kependudukan yang terdapat di desa. Surat ini dibuat untuk keperluan: <strong>${escapeHtml(d.keperluan||'-')}</strong>.</p>
+      <p>Demikian surat keterangan domisili ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya.</p>`,
+
+    usaha: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa:</p>
       ${identBlock(d)}
-      <p>Adalah benar warga Desa ${escapeHtml(kop.namaDesa)} yang tergolong keluarga kurang mampu, guna keperluan: <strong>${escapeHtml(d.keperluan||'-')}</strong>.</p>
-      <p>Demikian surat keterangan tidak mampu ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.</p>`,
-      kelahiran: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa telah lahir seorang anak dari orang tua berikut:</p>
+      <p>Benar yang bersangkutan merupakan warga Desa ${escapeHtml(kop.namaDesa)} dan memiliki serta menjalankan kegiatan usaha di wilayah desa tersebut.</p>
+      <p>Adapun usaha yang dijalankan memiliki keterangan sebagai berikut: <strong>${escapeHtml(d.keperluan||'-')}</strong>. Kegiatan usaha tersebut dilaksanakan sebagai salah satu bentuk mata pencaharian atau kegiatan ekonomi yang dilakukan oleh yang bersangkutan.</p>
+      <p>Surat keterangan ini dibuat berdasarkan keterangan yang diberikan oleh yang bersangkutan dan dapat dipergunakan sebagai salah satu dokumen pendukung dalam memenuhi keperluan administrasi yang berkaitan dengan kegiatan usaha tersebut.</p>
+      <p>Demikian surat keterangan usaha ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya.</p>`,
+
+    tidak_mampu: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa:</p>
       ${identBlock(d)}
-      <p>Keterangan kelahiran: <strong>${escapeHtml(d.keperluan||'-')}</strong>.</p>
-      <p>Demikian surat keterangan kelahiran ini dibuat untuk dapat dipergunakan sebagaimana mestinya, khususnya untuk keperluan pencatatan sipil.</p>`,
-      kematian: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa telah meninggal dunia:</p>
+      <p>Adalah benar warga Desa ${escapeHtml(kop.namaDesa)} yang berdomisili di wilayah desa tersebut. Berdasarkan keterangan dan data administrasi yang diketahui oleh pemerintah desa, yang bersangkutan termasuk dalam keluarga yang memiliki keterbatasan dalam memenuhi kebutuhan ekonomi.</p>
+      <p>Surat keterangan ini dibuat untuk membantu yang bersangkutan dalam memenuhi persyaratan administrasi guna keperluan: <strong>${escapeHtml(d.keperluan||'-')}</strong>.</p>
+      <p>Surat keterangan ini diberikan sebagai dokumen pendukung sesuai dengan keperluan yang diajukan oleh yang bersangkutan dan bukan merupakan pengganti dokumen resmi lainnya yang dipersyaratkan oleh instansi terkait.</p>
+      <p>Demikian surat keterangan tidak mampu ini dibuat dengan sebenar-benarnya agar dapat dipergunakan sebagaimana mestinya.</p>`,
+
+    kelahiran: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa telah lahir seorang anak dari orang tua berikut:</p>
       ${identBlock(d)}
-      <p>Keterangan: <strong>${escapeHtml(d.keperluan||'-')}</strong>.</p>
-      <p>Demikian surat keterangan kematian ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.</p>`,
-    };
+      <p>Berdasarkan keterangan yang disampaikan kepada Pemerintah Desa ${escapeHtml(kop.namaDesa)}, benar telah terjadi kelahiran sebagaimana data dan keterangan yang tercantum dalam surat ini.</p>
+      <p>Adapun keterangan mengenai kelahiran tersebut adalah: <strong>${escapeHtml(d.keperluan||'-')}</strong>. Surat keterangan ini dibuat sebagai salah satu dokumen pendukung untuk proses pencatatan dan pengurusan administrasi kependudukan, khususnya dalam penerbitan dokumen kelahiran dan dokumen kependudukan lainnya.</p>
+      <p>Demikian surat keterangan kelahiran ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya, khususnya dalam rangka memenuhi keperluan administrasi pencatatan sipil.</p>`,
+
+    kematian: `<p>Yang bertanda tangan di bawah ini ${pengantarKades}, menerangkan bahwa telah meninggal dunia:</p>
+      ${identBlock(d)}
+      <p>Berdasarkan keterangan yang diterima dan diketahui oleh Pemerintah Desa ${escapeHtml(kop.namaDesa)}, benar bahwa yang bersangkutan telah meninggal dunia sebagaimana data dan keterangan yang tercantum dalam surat ini.</p>
+      <p>Adapun keterangan mengenai peristiwa kematian tersebut adalah: <strong>${escapeHtml(d.keperluan||'-')}</strong>. Surat keterangan ini dibuat sebagai salah satu dokumen pendukung untuk keperluan administrasi kependudukan, pencatatan sipil, serta keperluan lain yang berkaitan dengan status kependudukan yang bersangkutan.</p>
+      <p>Demikian surat keterangan kematian ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya oleh pihak yang berkepentingan.</p>`
+
+  };
     return templates[jenis] || '';
   }
   function identBlock(d){
-    return `<p style="margin:14px 0;">
-      Nama&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${escapeHtml(d.nama||'-')}<br>
-      NIK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${escapeHtml(d.nik||'-')}<br>
-      Tempat/Tgl Lahir&nbsp;: ${escapeHtml(d.ttl||'-')}<br>
-      Jenis Kelamin&nbsp;&nbsp;: ${escapeHtml(d.jk||'-')}<br>
-      Pekerjaan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${escapeHtml(d.pekerjaan||'-')}<br>
-      Alamat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${escapeHtml(d.alamat||'-')}
-    </p>`;
+    const rows = [
+      ['Nama', d.nama||'-'],
+      ['NIK', d.nik||'-'],
+      ['Tempat/Tgl Lahir', d.ttl||'-'],
+      ['Jenis Kelamin', d.jk||'-'],
+      ['Pekerjaan', d.pekerjaan||'-'],
+      ['Alamat', d.alamat||'-'],
+    ];
+    const cells = rows.map(([label,val])=>`
+      <div class="ig-label">${escapeHtml(label)}</div><div class="ig-colon">:</div><div class="ig-value">${escapeHtml(val)}</div>`).join('');
+    return `<div class="ident-grid">${cells}</div>`;
   }
 
   document.getElementById('genSurat').onclick = async ()=>{
@@ -1012,21 +1149,46 @@
     }catch(e){ errToast(e.message); }
   };
 
+  // Bersihkan kata "Kabupaten"/"Kecamatan" jika sudah ikut tersimpan di data,
+  // supaya tidak dobel dengan kata yang sudah ditambahkan template kop surat di bawah.
+  function stripWilayahPrefix(val, prefixes){
+    let v = (val||'').trim();
+    for(const p of prefixes){
+      const re = new RegExp('^' + p + '\\s+', 'i');
+      v = v.replace(re, '');
+    }
+    return v;
+  }
+
   function previewSurat(rec){
     const s = DATA.settings;
     const body = buildLetterBody(rec.jenis, rec, s);
     const html = `
       <div class="letter-page">
         <div class="kop">
-          <div class="seal-lg">LOGO<br>DESA</div>
+          <div class="seal-lg">
+            <img src="/Bky.png" alt="Logo Desa">
+          </div>
+
           <div class="kop-text">
-            <div class="l1">PEMERINTAH KABUPATEN ${escapeHtml((s.kabupaten||'').toUpperCase())}</div>
-            <div class="l1">KECAMATAN ${escapeHtml((s.kecamatan||'').toUpperCase())}</div>
-            <div class="l2">PEMERINTAH ${escapeHtml((s.namaDesa||'').toUpperCase())}</div>
-            <div class="l3">${escapeHtml(s.alamat||'')}</div>
+            <div class="l1">
+              PEMERINTAH KABUPATEN ${escapeHtml(stripWilayahPrefix(s.kabupaten, ['Kabupaten']).toUpperCase())}
+            </div>
+
+            <div class="l1">
+              KECAMATAN ${escapeHtml(stripWilayahPrefix(s.kecamatan, ['Kecamatan']).toUpperCase())}
+            </div>
+
+            <div class="l2">
+              PEMERINTAH ${escapeHtml((s.namaDesa||'').toUpperCase())}
+            </div>
+
+            <div class="l3">
+              ${escapeHtml(s.alamat||'')}
+            </div>
           </div>
         </div>
-        <div class="letter-title">
+                <div class="letter-title">
           <div class="t1">${escapeHtml(SURAT_LABEL[rec.jenis]||'Surat Keterangan')}</div>
           <div class="t2">Nomor: ${escapeHtml(rec.nomorSurat)}</div>
         </div>
@@ -1034,7 +1196,7 @@
           ${body}
           <div class="sig-block">
             <div class="sig-inner">
-              <div>${escapeHtml(s.namaDesa)}, ${fmtDate(rec.tanggal)}</div>
+              <div>${escapeHtml(s.namaDesa)}, ${fmtDate(todayISO())}</div>
               <div>${escapeHtml(s.jabatan||'Kepala Desa')},</div>
               <div class="sp"></div>
               <div style="font-weight:700; text-decoration:underline;">${escapeHtml(s.namaKades||'-')}</div>

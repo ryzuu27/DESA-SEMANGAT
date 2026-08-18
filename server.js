@@ -73,12 +73,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res) => res.status(404).json({ error: 'Tidak ditemukan.' }));
 
-// Hanya jalankan app.listen jika dijalankan secara lokal
-if (process.env.NODE_ENV !== 'production') {
+// Jalankan app.listen kecuali saat dijalankan sebagai Vercel Serverless Function
+// (Vercel otomatis menyetel process.env.VERCEL, jadi ini lebih tepat daripada mengecek NODE_ENV —
+// karena NODE_ENV=production JUGA dipakai saat dijalankan normal di VPS, dan seharusnya tetap listen).
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`[SIPADES] Server berjalan di http://localhost:${PORT}`);
   });
 }
 
-// Export app untuk Vercel Serverless Function
+// Export app (dipakai kembali oleh Vercel Serverless Function bila suatu saat diperlukan)
 module.exports = app;

@@ -13,7 +13,7 @@ const SURAT_KODE = {
 const SURAT_LABEL = {
   pengantar_ktp: 'Surat Pengantar KTP', domisili: 'Surat Keterangan Domisili',
   usaha: 'Surat Keterangan Usaha', tidak_mampu: 'Surat Keterangan Tidak Mampu',
-  kelahiran: 'Surat Keterangan Kelahiran', kematian: 'Surat Keterangan Kematian',
+  kelahiran: 'Surat Keterangan Kelahiran', kematian: 'Surat Keterangan Kematian', Kartu_Keluarga: 'Surat Keterangan Kartu Keluarga',
   lainnya: 'Surat Keterangan',
 };
 
@@ -29,6 +29,12 @@ router.get('/', (req, res) => {
   res.json(db.surat);
 });
 
+function getTanggalWIB() {
+  const now = new Date();
+  const wib = new Date(now.getTime() + 7 * 60 * 60 * 1000); // offset UTC+7
+  return wib.toISOString().slice(0, 10);
+}
+
 router.post('/', async (req, res) => {
   const db = readDb();
   const jenis = req.body.jenis;
@@ -37,7 +43,7 @@ router.post('/', async (req, res) => {
     id: uuid(),
     ...req.body,
     nomorSurat,
-    tanggal: req.body.tanggal || new Date().toISOString().slice(0, 10),
+    tanggal: req.body.tanggal || getTanggalWIB(),
     createdAt: new Date().toISOString(),
     createdBy: req.session.user.username,
   };
